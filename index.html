@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget de Respiration Amélioré</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f4f8;
+        }
+        .container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+        }
+        .circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: black;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 4s ease-in-out;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+        .circle::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #0077be, #00a6ed, #89cff0, #0077be);
+            z-index: -1;
+            filter: blur(20px);
+            animation: glowing 10s linear infinite;
+        }
+        @keyframes glowing {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .instruction {
+            font-size: 24px;
+            font-weight: 900;
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .timer {
+            font-size: 18px;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .pulse {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="pulse"></div>
+        <div class="circle">
+            <div class="instruction">Respirez</div>
+            <div class="timer">00:00</div>
+        </div>
+    </div>
+
+    <script>
+        const circle = document.querySelector('.circle');
+        const instruction = document.querySelector('.instruction');
+        const timer = document.querySelector('.timer');
+        const pulse = document.querySelector('.pulse');
+
+        let seconds = 0;
+        let breathState = 'inhale';
+
+        function updateTimer() {
+            seconds++;
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            timer.textContent = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        function breathe() {
+            if (breathState === 'inhale') {
+                circle.style.transform = 'scale(1.1)';
+                pulse.style.animation = 'pulse 4s ease-in-out infinite';
+                instruction.textContent = 'Inspirez';
+                setTimeout(() => {
+                    breathState = 'hold';
+                    breathe();
+                }, 4000);
+            } else if (breathState === 'hold') {
+                pulse.style.animation = 'none';
+                instruction.textContent = 'Retenez';
+                setTimeout(() => {
+                    breathState = 'exhale';
+                    breathe();
+                }, 7000);
+            } else {
+                circle.style.transform = 'scale(1)';
+                pulse.style.animation = 'pulse 8s ease-in-out infinite reverse';
+                instruction.textContent = 'Expirez';
+                setTimeout(() => {
+                    breathState = 'inhale';
+                    breathe();
+                }, 8000);
+            }
+        }
+
+        breathe();
+        setInterval(updateTimer, 1000);
+    </script>
+</body>
+</html>
